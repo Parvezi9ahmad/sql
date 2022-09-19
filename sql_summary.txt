@@ -1,0 +1,227 @@
+Distinct->
+The SELECT DISTINCT statement is used to return only distinct (different) values.it takes only one value as an input and return non duplicate result.
+//it can return one column with multiple records but provide distinct value
+exp
+SELECT DISTINCT Country FROM Customers;
+
+WHERE->
+The WHERE clause is used to filter records.
+It is used to extract only those records that fulfill a specified condition.
+//it can return one or more column with more than one record
+exp
+SELECT * FROM Customers
+WHERE Country='Mexico';
+
+and,Or ->used with where clause withtwo conditions
+select * from Customers
+where Country='Germany' and City='Germany'
+
+not->is used for negate the condition
+select * from Customers
+where not Country='Germany'
+
+Order By->The ORDER BY keyword is used to sort the result-set in ascending or descending order.
+The ORDER BY keyword sorts the records in ascending order by default. To sort the records in descending order, use the DESC keyword.
+//it can return one or more columns with more than one records n ascending or decending orders
+expl
+select * from Customers
+order by CustomerName
+
+descending order
+select * from Customers
+order by CustomerName desc
+
+//we can use multiple columns as ascending and descing order
+//it can return one or more columns in ascending order	
+select * from Customers
+order by Country asc,CustomerName desc
+
+null->
+If a field in a table is optional, it is possible to insert a new record or update a record without adding a value to this field. Then, the field will be saved with a NULL value.
+expl:
+select * from Customers 
+where Address is null;
+
+Update->The UPDATE statement is used to modify the existing records in a table.//we can set multiple column to update
+UPDATE Customers
+SET ContactName = 'Alfred Schmidt', City= 'Frankfurt'
+WHERE CustomerID = 1;
+
+Delete->The DELETE statement is used to delete existing records in a table.
+expl
+DELETE FROM Customers WHERE CustomerName='Alfreds Futterkiste';
+
+Top/limit->it can return limited column with there all records                            
+The SELECT TOP clause is useful on large tables with thousands of records. Returning a large number of records can impact performance.
+//it can return one or more columns with more than records but column will be limit as we declare
+expl:
+select * from Customers limit 3;
+
+
+max,min->it can return only one column one record
+//it can return only one column with one record
+select max(Price)
+from Products;
+
+
+count,sum,avg->it returns only one column with one records
+select count(ProductID) from Products;
+
+Like->The LIKE operator is used in a WHERE clause to search for a specified pattern in a column.
+The percent sign (%) represents zero, one, or multiple characters
+ The underscore sign (_) represents one, single character
+//it return one or more columns with more than one records.
+exple:
+select * from Customers where CustomerName like '%a';
+
+In->The IN operator allows you to specify multiple values in a WHERE clause.
+//it returns one or more columns with more than one record
+//it accepts string or integers as an input we can put one or more than one parameters as an input
+expl1:
+select * from Customers where Country in('Germany','UK','Mexico');
+
+expl2:
+select * from Customers where Country not in('Germany','UK','Mexico');
+
+expl3://used for common column of two table having common data
+//it returns one or more columns with more than one record for first external query
+//it return one column with more than one records for external query
+//in  as use for combine
+select * from Customers where Country in (select Country from Suppliers);
+
+Between->it uses for ranges 
+//it return one or more columns with more than one records.
+expl
+select * from Products where Price between 18 and 20
+
+expl2:we can combine between with in and order by as well by using and operator
+select * from Products where Price between 10 and 20 and CategoryID in (4,5,8);
+
+expl3:top 10 products price
+select * from  (select * from Products order by Price desc limit 10) 
+//top 10 product price addition
+select sum(Price) from (select * from Products order by Price desc limit 10) 
+
+Alias->SQL aliases are used to give a table, or a column in a table, a temporary name.
+exple1:four column with only one alias example
+select CustomerName,(Address || ' , '||PostalCode ||' , '||City||' , '||Country) as COMPLETE_ADDRESS from Customers
+
+//if two tables have relationship and if you want particular employee record along with two tables then you can prefere below alias example and for matching the records use where clause
+//it returns one or more columns with more than one record of two tables
+SELECT c.CustomerName,c.Address,o.OrderDate,o.CustomerID
+from Customers as c,Orders as o 
+where c.CustomerID=o.CustomerID and c.CustomerName='Berglunds snabbköp'
+
+//expl2:same example without alias
+SELECT Orders.OrderID, Orders.OrderDate, Customers.CustomerName
+FROM Customers, Orders
+WHERE Customers.CustomerName='Around the Horn' AND Customers.CustomerID=Orders.CustomerID;
+
+joins->A JOIN clause is used to combine rows from two or more tables, based on a related column between them.
+
+(INNER) JOIN: Returns records that have matching values in both tables
+expl
+SELECT c.CustomerName,o.OrderID,o.OrderDate
+from Customers c inner outer join Orders o on c.CustomerID=o.CustomerID
+
+LEFT (OUTER) JOIN: Returns all records from the left table, and the matched records from the right table
+expl:
+SELECT c.CustomerName,o.OrderID,o.OrderDate
+from Customers c left outer join Orders o on c.CustomerID=o.CustomerID
+
+RIGHT (OUTER) JOIN: Returns all records from the right table, and the matched records from the left table
+expl:
+SELECT c.CustomerName,o.OrderID,o.OrderDate
+from Customers c right outer join Orders o on c.CustomerID=o.CustomerID
+
+FULL (OUTER) JOIN: Returns all records when there is a match in either left or right table
+expl:
+SELECT c.CustomerName,o.OrderID,o.OrderDate
+from Customers c full outer join Orders o on c.CustomerID=o.CustomerID
+
+//Combine Example of three tables
+select Customers.CustomerName,Orders.OrderID,Shippers.ShipperName from
+((Orders right outer join Customers on Customers.CustomerID=Orders.CustomerID)
+inner join Shippers on Shippers.ShipperID=Orders.ShipperID)
+
+self join->A self join is a regular join, but the table is joined with itself.
+expl:
+select A.CustomerName as CustomerName1,B.CustomerName as CustomerName2,A.City
+from Customers A,Customers B 
+where A.CustomerName <> B.CustomerName and
+A.City=B.city order by A.City
+
+
+UNION->The UNION operator is used to combine the result-set of two or more SELECT statements.
+//union select only distinct value and unionall select distinct and duplicate value as well
+//two sql query should be return one or more than one but not * and should be also same 	
+select City from Customers
+union 
+select City from Suppliers
+
+//union example with two different conditions
+select ContactName,Address,City,Country from Customers
+where Country='Germany'
+union all
+select ContactName,Address,City,Country from Suppliers
+where Country='UK'
+
+//Group by:
+The GROUP BY statement groups rows that have the same values into summary rows, like "find the number of customers in each country"
+The GROUP BY statement is often used with aggregate functions (COUNT(), MAX(), MIN(), SUM(), AVG()) to group the result-set by one or more columns.
+
+//if you use group by without aggregate function then it will return distinct value only
+SELECT Country,count(CustomerName) as NOCUSTOMERS
+FROM Customers
+group by Country
+
+//we can use group by in relationships between two tables,joints,self join as well.below example for self join
+select count(Customers.CustomerName),count(Orders.OrderID) from Orders left outer join Customers on Orders.CustomerID=Customers.CustomerID 
+group by CustomerName		
+
+//one more example of group by where i can use order by for aggregate function
+select count(CustomerID) as CUTSID,Country
+from Customers
+group by Country
+order by count(CustomerID)	
+
+Haing:The HAVING clause was added to SQL because the WHERE keyword cannot be used with aggregate functions.
+expl:
+The HAVING clause was added to SQL because the WHERE keyword cannot be used with aggregate functions.
+
+//having cluase one more example:
+select Employees.LastName,count(Orders.OrderID)
+from Orders inner join Employees on Orders.EmployeeID=Employees.EmployeeID
+group by LastName
+having count(Orders.OrderID)>5
+
+//having clause with joins
+SELECT Employees.LastName, COUNT(Orders.OrderID) AS NumberOfOrders
+FROM Orders
+INNER JOIN Employees ON Orders.EmployeeID = Employees.EmployeeID
+WHERE LastName = 'Davolio' OR LastName = 'Callahan'
+GROUP BY LastName
+HAVING COUNT(Orders.OrderID) > 20;
+ 
+EXIST:The EXISTS operator is used to test for the existence of any record in a subquery.
+The EXISTS operator returns TRUE if the subquery returns one or more records.
+example
+select SupplierName from Suppliers
+where exists(select ProductName,Price from Products where Suppliers.SupplierID=Products.SupplierID and Price<20);
+
+ANY or ALL:The ANY and ALL operators allow you to perform a comparison between a single column value and a range of other values.
+
+ANY:returns a boolean value as a result.returns TRUE if ANY of the subquery values meet the condition.
+//note:first table column in where clause and second table return colum should be same		
+select ProductName From Products
+where ProductID=any (select ProductID from OrderDetails where Quantity=10);
+
+
+ALL:returns a boolean value as a result.returns TRUE if ALL of the subquery values meet the condition.is used with SELECT, WHERE and HAVING statements
+//it is same as any but it returns true if all the records in the condition is true
+SELECT ProductName
+FROM Products
+WHERE ProductID = all
+  (SELECT ProductID
+  FROM OrderDetails
+  WHERE Quantity = 10);
