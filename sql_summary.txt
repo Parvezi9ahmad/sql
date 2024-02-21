@@ -168,6 +168,7 @@ where Country='UK'
 
 //Group by:
 The GROUP BY statement groups rows that have the same values into summary rows, like "find the number of customers in each country"
+groupby doesn't return * values instaed it return columns along with count(columns)
 The GROUP BY statement is often used with aggregate functions (COUNT(), MAX(), MIN(), SUM(), AVG()) to group the result-set by one or more columns.
 
 //if you use group by without aggregate function then it will return distinct value only
